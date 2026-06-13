@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For Ikanke 💌</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --rose: #e8546a;
+            --blush: #fce4ec;
+            --deep: #2c1b2e;
+            --gold: #d4a853;
+            --cream: #fff8f0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--deep);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Lato', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* floating petals */
+        .petal {
+            position: fixed;
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: fall linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-60px) rotate(0deg);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* card stage */
+        #stage {
+            position: relative;
+            z-index: 10;
+            width: min(520px, 92vw);
+            perspective: 1200px;
+        }
+
+        .card {
+            display: none;
+            background: var(--cream);
+            border-radius: 24px;
+            padding: 52px 44px 48px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .55), 0 0 0 1px rgba(212, 168, 83, .25);
+            animation: cardIn .6s cubic-bezier(.22, 1, .36, 1) both;
+            text-align: center;
+            min-height: 340px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: rotateY(-25deg) scale(.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: rotateY(0deg) scale(1);
+            }
+        }
+
+        /* once the entrance animation finishes, drop the transform entirely so
+           this element no longer creates a containing block for fixed children */
+        .card.anim-done {
+            animation: none;
+            transform: none;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at top left, rgba(232, 84, 106, .08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .card .month {
+            font-family: 'Playfair Display', serif;
+            font-size: .78rem;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--rose);
+            font-weight: 700;
+        }
+
+        .card .emoji-big {
+            font-size: 2.8rem;
+            line-height: 1;
+        }
+
+        .card .headline {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--deep);
+            line-height: 1.35;
+        }
+
+        .card .headline em {
+            color: var(--rose);
+            font-style: italic;
+        }
+
+        .card .body {
+            font-size: 1rem;
+            color: #5a4a5e;
+            line-height: 1.75;
+            font-weight: 300;
+            max-width: 380px;
+        }
+
+        /* progress dots */
+        #dots {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .25);
+            transition: background .3s, transform .3s;
+        }
+
+        .dot.active {
+            background: var(--gold);
+            transform: scale(1.35);
+        }
+
+        /* next button */
+        #nextBtn {
+            margin-top: 10px;
+            padding: 13px 38px;
+            background: var(--rose);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Lato', sans-serif;
+            font-size: .95rem;
+            letter-spacing: .08em;
+            cursor: pointer;
+            transition: background .2s, transform .15s, box-shadow .2s;
+            box-shadow: 0 6px 22px rgba(232, 84, 106, .45);
+        }
+
+        #nextBtn:hover {
+            background: #d0405a;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(232, 84, 106, .5);
+        }
+
+        #nextBtn:active {
+            transform: translateY(0);
+        }
+
+        /* ── PROPOSAL CARD ── */
+        #proposalCard {
+            background: linear-gradient(145deg, #1a0d1c, #2c1b2e);
+            color: var(--cream);
+        }
+
+        #proposalCard::before {
+            display: none;
+        }
+
+        #proposalCard .q {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            line-height: 1.4;
+            color: var(--cream);
+        }
+
+        #proposalCard .q span {
+            color: var(--gold);
+        }
+
+        #proposalCard .sub {
+            font-size: .95rem;
+            color: rgba(255, 248, 240, .6);
+            font-weight: 300;
+        }
+
+        .answer-btns {
+            display: flex;
+            gap: 18px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #yesBtn,
+        #noBtn {
+            padding: 13px 44px;
+            border-radius: 50px;
+            border: none;
+            font-family: 'Lato', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            cursor: pointer;
+            transition: transform .15s, box-shadow .2s;
+        }
+
+        #yesBtn {
+            background: var(--gold);
+            color: var(--deep);
+            box-shadow: 0 6px 22px rgba(212, 168, 83, .4);
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 10px 30px rgba(212, 168, 83, .55);
+        }
+
+        /* #noBtn starts as a normal button sitting beside #yesBtn. Only once
+           she tries to interact with it does it become position:fixed and
+           start dodging around the viewport. */
+        #noBtn {
+            background: red;
+            color: white;
+            border: 1px solid rgba(255, 248, 240, .2);
+            transition: none;
+        }
+
+        #noBtn.fleeing {
+            position: fixed;
+            z-index: 9999;
+            margin: 0;
+        }
+
+        /* ── THANK YOU ── */
+        #thankYouCard {
+            background: linear-gradient(145deg, #0d0a10, #1e1224);
+            color: var(--cream);
+            gap: 14px;
+        }
+
+        #thankYouCard::before {
+            display: none;
+        }
+
+        .hearts-burst {
+            font-size: 2.4rem;
+            letter-spacing: .1em;
+        }
+
+        #thankYouCard .ty-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            line-height: 1.2;
+        }
+
+        #thankYouCard .ty-body {
+            font-size: 1rem;
+            color: rgba(255, 248, 240, .75);
+            line-height: 1.8;
+            font-weight: 300;
+            max-width: 380px;
+        }
+
+        #thankYouCard .ty-sign {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--rose);
+            font-size: 1.1rem;
+        }
+
+        #thankYouCard .ty-redirect {
+            font-size: .85rem;
+            color: rgba(255, 248, 240, .5);
+            font-weight: 300;
+            margin-top: 4px;
+        }
+
+        #thankYouCard .ty-link {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 11px 30px;
+            border-radius: 50px;
+            background: var(--rose);
+            color: #fff;
+            text-decoration: none;
+            font-size: .9rem;
+            letter-spacing: .06em;
+            box-shadow: 0 6px 22px rgba(232, 84, 106, .45);
+        }
+
+        /* confetti burst */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: confettiFall 1.8s ease-in forwards;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- floating petals -->
+    <div id="petals"></div>
+
+    <div id="stage">
+        <div id="dots"></div>
+
+        <!-- CARD 1 -->
+        <div class="card active" id="c0">
+            <span class="month">Coconut Rice</span>
+            <span class="emoji-big">❄️✨</span>
+            <p class="headline">It all <em>began</em> with the Cocount rice 🤣.</p>
+            <p class="body">
+                The first day I saw you, during the meeting, you spoke so fluently and made a lot of sense. I knew from
+                that very moment that I needed to know you. Of course I got your number and got blocked after texting
+                you (😢🤣)
+            </p>
+            <button id="nextBtn" onclick="nextCard()">Continue &rarr;</button>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="card" id="c1" style="overflow-y: auto;">
+            <span class="month">The Hospital · First Hangout</span>
+            <p class="headline">The hospital events that <em>changed everything</em></p>
+            <p class="body">
+                It all started on the 1<sup>st</sup> of March, with me complimenting you that sunday(on whatsapp), and then your school began to stress
+                you. I couldn't bear to see you cry. Fast forward to when you eventually got sick.
+                Our first real, hangout (at the hospital). I just wanted you to feel better, to get better, then again,
+                I think this is where it actually really began, because you agreed to a real outing.</p>
+            <button class="card-next" onclick="nextCard()">Continue &rarr;</button>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="card" id="c2">
+            <span class="month">Then &amp; Now</span>
+            <span class="emoji-big">👁️‍🗨️💭</span>
+            <p class="headline">Did I ever tell you…</p>
+            <p class="body">That somewhere along the way, I realised — <strong>you are the one.</strong> Not a maybe.
+                Not a "we'll see." Just quietly, certainly, you.</p>
+            <button class="card-next" onclick="nextCard()">Continue &rarr;</button>
+        </div>
+
+        <!-- CARD 4 -->
+        <div class="card" id="c3">
+            <span class="emoji-big">🌀</span>
+            <p class="headline">I can't <em>stop</em> thinking about you</p>
+            <p class="body">You live rent-free in my mind. I catch myself smiling for no reason, and because of you.
+                Every single time.</p>
+            <button class="card-next" onclick="nextCard()">Continue &rarr;</button>
+        </div>
+
+        <!-- CARD 5 -->
+        <div class="card" id="c4">
+            <span class="emoji-big">❤</span>
+            <p class="headline">I keep craving your presence</p>
+            <p class="body">Being around you doesn't feel like enough. And being away from you feels like too much. I
+                just want you, your time, your energy, your laugh, everything.</p>
+            <p class="body">You're beautiful inside and out, Ikanke. Truly, genuinely one of a kind. And I thank God
+                every day that you're in my life.</p>
+            <button class="card-next" onclick="nextCard()">Continue &rarr;</button>
+        </div>
+
+        <!-- CARD 6 -->
+        <div class="card" id="c5">
+            <span class="emoji-big">🤫</span>
+            <p class="headline">You probably don't know <em>half</em> of it</p>
+            <p class="body">Everything about you is just... perfect to me.
+                Your laughter, your smile, your frown lol, your serious face, your skin (oh that lovely skin), your
+                brows, your lips (the birth mark as well), the way you talk, your arms, the way you talk, the way you
+                think, your mood (that can be so confusing). I love it, I love it all!!!!
+            </p>
+            <button class="card-next" onclick="nextCard()">Continue &rarr;</button>
+        </div>
+
+        <!-- CARD 7 — PROPOSAL -->
+        <div class="card" id="c6" style="display:none;" data-proposal="true">
+            <!-- shown as proposalCard -->
+        </div>
+
+        <!-- PROPOSAL CARD (special) -->
+        <div class="card" id="proposalCard" style="display:none;">
+            <span style="font-size:2.2rem;">💌</span>
+            <p class="q">Will you do me the honor of being <span>my woman</span>, Ikanke?</p>
+            <p class="sub">Not just a friend. My person. My lady. 🤍</p>
+            <div class="answer-btns">
+                <button id="yesBtn" onclick="onYes()">Yes, I will 💛</button>
+                <button id="noBtn" onclick="onNo()">No</button>
+            </div>
+        </div>
+
+        <!-- THANK YOU CARD -->
+        <div class="card" id="thankYouCard" style="display:none;">
+            <div class="hearts-burst">💛🤍💛🤍💛</div>
+            <p class="ty-title">Thank you so much, Ikanke! 🥹</p>
+            <p class="ty-body">
+                You have absolutely no idea how happy you just made me. I promise you — you are <em>not</em> going to
+                regret this. I'll show up for you every single day, and I'll make sure you never doubt that you made the
+                right choice.
+            </p>
+            <p class="ty-body">This is only the beginning. 🌹</p>
+            <p class="ty-sign">— Yours, always 💌</p>
+            <p class="ty-redirect">Taking you to WhatsApp in a moment...</p>
+            <a class="ty-link" id="waLink" href="#" target="_blank" rel="noopener">Open WhatsApp now</a>
+        </div>
+
+    </div><!-- /stage -->
+
+    <script>
+        const totalCards = 7; // c0–c5 + proposalCard
+        let current = 0;
+        const regularCards = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5'];
+
+        // --- dots ---
+        const dotsEl = document.getElementById('dots');
+        for (let i = 0; i < totalCards; i++) {
+            const d = document.createElement('div');
+            d.className = 'dot' + (i === 0 ? ' active' : '');
+            dotsEl.appendChild(d);
+        }
+        function updateDots(idx) {
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+        }
+
+        // once a card's entrance animation finishes, strip the transform so it
+        // can't act as a containing block for any fixed-position elements
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('animationend', () => card.classList.add('anim-done'));
+        });
+
+        // --- next card ---
+        function nextCard() {
+            if (current < regularCards.length - 1) {
+                document.getElementById(regularCards[current]).style.display = 'none';
+                current++;
+                const el = document.getElementById(regularCards[current]);
+                el.classList.remove('anim-done');
+                el.style.display = 'flex';
+                el.classList.remove('active');
+                void el.offsetWidth;
+                el.classList.add('active');
+                updateDots(current);
+            } else {
+                // show proposal
+                document.getElementById(regularCards[current]).style.display = 'none';
+                current++;
+                showProposal();
+            }
+        }
+
+        function showProposal() {
+            const p = document.getElementById('proposalCard');
+            p.classList.remove('anim-done');
+            p.style.display = 'flex';
+            p.classList.remove('active');
+            void p.offsetWidth;
+            p.classList.add('active');
+            updateDots(current);
+        }
+
+        // --- WhatsApp redirect details ---
+        const WA_NUMBER = '2348102678284'; // 08102678284 in international format
+        const WA_MESSAGE = 'Yes Dennis, I will be your lover, I love you Dennis';
+        const WA_URL = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(WA_MESSAGE);
+
+        // --- YES ---
+        function onYes() {
+            document.getElementById('proposalCard').style.display = 'none';
+
+            const ty = document.getElementById('thankYouCard');
+            ty.classList.remove('anim-done');
+            ty.style.display = 'flex';
+            ty.classList.remove('active');
+            void ty.offsetWidth;
+            ty.classList.add('active');
+            dotsEl.style.display = 'none';
+            spawnConfetti();
+
+            // wire up the manual fallback link
+            document.getElementById('waLink').href = WA_URL;
+
+            // auto-redirect to WhatsApp after a short celebratory pause
+            setTimeout(() => {
+                window.location.href = WA_URL;
+            }, 3000);
+        }
+
+        // --- NO button: sits beside "Yes" until she tries to interact with it,
+        // then becomes a fixed element that dodges around the viewport ---
+        function positionNoBtn() {
+            const btn = document.getElementById('noBtn');
+            const card = document.getElementById('proposalCard');
+            const cardRect = card.getBoundingClientRect();
+            const w = btn.offsetWidth || 100;
+            const h = btn.offsetHeight || 44;
+            const edge = 10;   // keep this far from the viewport edges
+            const margin = 50; // how far outside the card it's allowed to roam
+
+            let minLeft = cardRect.left - margin;
+            let maxLeft = cardRect.right + margin - w;
+            let minTop = cardRect.top - margin;
+            let maxTop = cardRect.bottom + margin - h;
+
+            // clamp everything to stay on-screen
+            minLeft = Math.max(edge, minLeft);
+            maxLeft = Math.min(window.innerWidth - w - edge, maxLeft);
+            minTop = Math.max(edge, minTop);
+            maxTop = Math.min(window.innerHeight - h - edge, maxTop);
+
+            // guard against inverted ranges on very small screens
+            if (maxLeft < minLeft) maxLeft = minLeft;
+            if (maxTop < minTop) maxTop = minTop;
+
+            btn.style.left = (minLeft + Math.random() * (maxLeft - minLeft)) + 'px';
+            btn.style.top = (minTop + Math.random() * (maxTop - minTop)) + 'px';
+        }
+
+        function startFleeing() {
+            const btn = document.getElementById('noBtn');
+            // make sure the proposal card's entrance transform is gone so
+            // position:fixed below is relative to the viewport, not the card
+            document.getElementById('proposalCard').classList.add('anim-done');
+            if (!btn.classList.contains('fleeing')) {
+                // anchor it at its current on-screen position before switching
+                // to position:fixed, so it doesn't jump on the first trigger
+                const rect = btn.getBoundingClientRect();
+                btn.style.left = rect.left + 'px';
+                btn.style.top = rect.top + 'px';
+                btn.classList.add('fleeing');
+            }
+            positionNoBtn();
+        }
+
+        function onNo() {
+            startFleeing();
+        }
+
+        const noBtnEl = document.getElementById('noBtn');
+        noBtnEl.addEventListener('mouseover', startFleeing);
+        noBtnEl.addEventListener('touchstart', function (e) {
+            e.preventDefault();
+            startFleeing();
+        });
+        window.addEventListener('resize', () => {
+            if (noBtnEl.classList.contains('fleeing')) positionNoBtn();
+        });
+
+        // --- petals ---
+        const PETALS = ['🌸', '🌺', '🌹', '💮', '✿', '🌷'];
+        const petalsEl = document.getElementById('petals');
+        for (let i = 0; i < 18; i++) {
+            const p = document.createElement('div');
+            p.className = 'petal';
+            p.textContent = PETALS[Math.floor(Math.random() * PETALS.length)];
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.fontSize = (.7 + Math.random() * .9) + 'rem';
+            p.style.animationDuration = (6 + Math.random() * 8) + 's';
+            p.style.animationDelay = (Math.random() * 10) + 's';
+            petalsEl.appendChild(p);
+        }
+
+        // --- confetti ---
+        function spawnConfetti() {
+            const colors = ['#e8546a', '#d4a853', '#fff8f0', '#c8a2c8', '#7ec8e3'];
+            for (let i = 0; i < 90; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti-piece';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.top = '-20px';
+                c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                c.style.animationDelay = (Math.random() * 1.2) + 's';
+                c.style.animationDuration = (1.4 + Math.random() * 1) + 's';
+                c.style.width = c.style.height = (6 + Math.random() * 8) + 'px';
+                c.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3000);
+            }
+        }
+
+        // add "Continue" button style to subsequent cards
+        document.querySelectorAll('.card-next').forEach(btn => {
+            btn.style.cssText = `
+      margin-top:10px;padding:13px 38px;background:#e8546a;color:#fff;
+      border:none;border-radius:50px;font-family:'Lato',sans-serif;
+      font-size:.95rem;letter-spacing:.08em;cursor:pointer;
+      box-shadow:0 6px 22px rgba(232,84,106,.45);
+    `;
+            btn.addEventListener('mouseover', () => { btn.style.background = '#d0405a'; btn.style.transform = 'translateY(-2px)'; });
+            btn.addEventListener('mouseout', () => { btn.style.background = '#e8546a'; btn.style.transform = 'translateY(0)'; });
+        });
+    </script>
+</body>
+
+</html>
